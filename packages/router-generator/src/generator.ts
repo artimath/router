@@ -125,7 +125,7 @@ import { Outlet, createRootRoute } from '@tanstack/react-router';
 export const Route = createRootRoute({
   component: () => (
     <React.Fragment>
-      <div>Hello "${rootPathId}"!</div>
+      <div>Hello "${config.virtualRouteConfig === undefined ? rootPathId : node.filePath}"!</div>
       <Outlet />
     </React.Fragment>
   ),
@@ -185,12 +185,16 @@ export const Route = createRootRoute({
       )
 
       let replaced = routeCode
+      const filePathId =
+        config.virtualRouteConfig === undefined
+          ? escapedRoutePath
+          : node.filePath
 
       if (!routeCode) {
         if (node.isLazy) {
           replaced = [
             `import { createLazyFileRoute } from '@tanstack/react-router'`,
-            `export const Route = createLazyFileRoute('${escapedRoutePath}')({
+            `export const Route = createLazyFileRoute('${filePathId}')({
   component: () => <div>Hello ${escapedRoutePath}!</div>
 })`,
           ].join('\n\n')
@@ -203,7 +207,7 @@ export const Route = createRootRoute({
         ) {
           replaced = [
             `import { createFileRoute } from '@tanstack/react-router'`,
-            `export const Route = createFileRoute('${escapedRoutePath}')({
+            `export const Route = createFileRoute('${filePathId}')({
   component: () => <div>Hello ${escapedRoutePath}!</div>
 })`,
           ].join('\n\n')
@@ -212,7 +216,7 @@ export const Route = createRootRoute({
         replaced = routeCode
           .replace(
             /(FileRoute\(\s*['"])([^\s]*)(['"],?\s*\))/g,
-            (match, p1, p2, p3) => `${p1}${escapedRoutePath}${p3}`,
+            (match, p1, p2, p3) => `${p1}${filePathId}${p3}`,
           )
           .replace(
             /(import\s*\{.*)(create(Lazy)?FileRoute)(.*\}\s*from\s*['"]@tanstack\/react-router['"])/gs,
@@ -222,7 +226,7 @@ export const Route = createRootRoute({
           .replace(
             /create(Lazy)?FileRoute(\(\s*['"])([^\s]*)(['"],?\s*\))/g,
             (match, p1, p2, p3, p4) =>
-              `${node.isLazy ? 'createLazyFileRoute' : 'createFileRoute'}${p2}${escapedRoutePath}${p4}`,
+              `${node.isLazy ? 'createLazyFileRoute' : 'createFileRoute'}${p2}${filePathId}${p4}`,
           )
       }
 
@@ -343,11 +347,14 @@ export const Route = createRootRoute({
       node.routePath?.replaceAll('$', '$$') ?? '',
     )
 
+    const filePathId =
+      config.virtualRouteConfig === undefined ? escapedRoutePath : node.filePath
+
     if (!routeCode) {
       const replaced = `import { json } from '@tanstack/start'
 import { createAPIFileRoute } from '@tanstack/start/api'
 
-export const Route = createAPIFileRoute('${escapedRoutePath}')({
+export const Route = createAPIFileRoute('${filePathId}')({
   GET: ({ request, params }) => {
     return json({ message: 'Hello ${escapedRoutePath}' })
   },
@@ -363,7 +370,7 @@ export const Route = createAPIFileRoute('${escapedRoutePath}')({
     } else {
       const copied = routeCode.replace(
         /(createAPIFileRoute\(\s*['"])([^\s]*)(['"],?\s*\))/g,
-        (_, p1, __, p3) => `${p1}${escapedRoutePath}${p3}`,
+        (_, p1, __, p3) => `${p1}${filePathId}${p3}`,
       )
 
       if (copied !== routeCode) {
@@ -552,7 +559,8 @@ export const Route = createAPIFileRoute('${escapedRoutePath}')({
     ${routeNodes
       .map((routeNode) => {
         const [filePathId, routeId] = getFilePathIdAndRouteIdFromPath(
-          routeNode.routePath,
+          config,
+          routeNode,
         )
 
         return `'${filePathId}': {
@@ -585,23 +593,23 @@ export const Route = createAPIFileRoute('${escapedRoutePath}')({
       __root__: {
         filePath: rootRouteNode.filePath,
         children: routeTree.map(
-          (d) => getFilePathIdAndRouteIdFromPath(d.routePath)[1],
+          (d) => getFilePathIdAndRouteIdFromPath(config, d)[1],
         ),
       },
       ...Object.fromEntries(
         routeNodes.map((d) => {
-          const [_, routeId] = getFilePathIdAndRouteIdFromPath(d.routePath)
+          const [_, routeId] = getFilePathIdAndRouteIdFromPath(config, d)
 
           return [
             routeId,
             {
               filePath: d.filePath,
               parent: d.parent?.routePath
-                ? getFilePathIdAndRouteIdFromPath(d.parent.routePath)[1]
+                ? getFilePathIdAndRouteIdFromPath(config, d.parent)[1]
                 : undefined,
               children: d.children?.map(
                 (childRoute) =>
-                  getFilePathIdAndRouteIdFromPath(childRoute.routePath)[1],
+                  getFilePathIdAndRouteIdFromPath(config, childRoute)[1],
               ),
             },
           ]
@@ -804,8 +812,13 @@ export const inferPath = (routeNode: RouteNode): string => {
     : (routeNode.cleanedPath?.replace(/\/$/, '') ?? '')
 }
 
-function getFilePathIdAndRouteIdFromPath(pathname?: string) {
-  const filePathId = removeTrailingUnderscores(pathname)
+function getFilePathIdAndRouteIdFromPath(config: Config, routeNode: RouteNode) {
+  if (config.virtualRouteConfig !== undefined) {
+    const id = routeNode.filePath
+    return [id, id] as const
+  }
+  
+  const filePathId = removeTrailingUnderscores(routeNode.routePath)
   const id = removeGroups(filePathId ?? '')
 
   return [filePathId, id] as const

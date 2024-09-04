@@ -66,57 +66,57 @@ const aRoute = aImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    'home.tsx': {
+      id: 'home.tsx'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof homeImport
       parentRoute: typeof rootRoute
     }
-    '/posts': {
-      id: '/posts'
+    'posts/posts.tsx': {
+      id: 'posts/posts.tsx'
       path: '/posts'
       fullPath: '/posts'
       preLoaderRoute: typeof postsPostsImport
       parentRoute: typeof rootRoute
     }
-    '/posts/': {
-      id: '/posts/'
+    'posts/posts-home.tsx': {
+      id: 'posts/posts-home.tsx'
       path: '/'
       fullPath: '/posts/'
       preLoaderRoute: typeof postsPostsHomeImport
       parentRoute: typeof postsPostsImport
     }
-    '/posts/$postId': {
-      id: '/posts/$postId'
+    'posts/posts-detail.tsx': {
+      id: 'posts/posts-detail.tsx'
       path: '/$postId'
       fullPath: '/posts/$postId'
       preLoaderRoute: typeof postsPostsDetailImport
       parentRoute: typeof postsPostsImport
     }
-    '/_first': {
-      id: '/_first'
+    'layout/first-layout.tsx': {
+      id: 'layout/first-layout.tsx'
       path: ''
       fullPath: ''
       preLoaderRoute: typeof layoutFirstLayoutImport
       parentRoute: typeof rootRoute
     }
-    '/_first/_second': {
-      id: '/_first/_second'
+    'layout/second-layout.tsx': {
+      id: 'layout/second-layout.tsx'
       path: ''
       fullPath: ''
       preLoaderRoute: typeof layoutSecondLayoutImport
       parentRoute: typeof layoutFirstLayoutImport
     }
-    '/_first/_second/layout-a': {
-      id: '/_first/_second/layout-a'
+    'a.tsx': {
+      id: 'a.tsx'
       path: '/layout-a'
       fullPath: '/layout-a'
       preLoaderRoute: typeof aImport
       parentRoute: typeof layoutSecondLayoutImport
     }
-    '/_first/_second/layout-b': {
-      id: '/_first/_second/layout-b'
+    'b.tsx': {
+      id: 'b.tsx'
       path: '/layout-b'
       fullPath: '/layout-b'
       preLoaderRoute: typeof bImport
@@ -149,50 +149,50 @@ export const routeTree = rootRoute.addChildren({
     "__root__": {
       "filePath": "root.tsx",
       "children": [
-        "/",
-        "/posts",
-        "/_first"
+        "home.tsx",
+        "posts/posts.tsx",
+        "layout/first-layout.tsx"
       ]
     },
-    "/": {
+    "home.tsx": {
       "filePath": "home.tsx"
     },
-    "/posts": {
+    "posts/posts.tsx": {
       "filePath": "posts/posts.tsx",
       "children": [
-        "/posts/",
-        "/posts/$postId"
+        "posts/posts-home.tsx",
+        "posts/posts-detail.tsx"
       ]
     },
-    "/posts/": {
+    "posts/posts-home.tsx": {
       "filePath": "posts/posts-home.tsx",
-      "parent": "/posts"
+      "parent": "posts/posts.tsx"
     },
-    "/posts/$postId": {
+    "posts/posts-detail.tsx": {
       "filePath": "posts/posts-detail.tsx",
-      "parent": "/posts"
+      "parent": "posts/posts.tsx"
     },
-    "/_first": {
+    "layout/first-layout.tsx": {
       "filePath": "layout/first-layout.tsx",
       "children": [
-        "/_first/_second"
+        "layout/second-layout.tsx"
       ]
     },
-    "/_first/_second": {
+    "layout/second-layout.tsx": {
       "filePath": "layout/second-layout.tsx",
-      "parent": "/_first",
+      "parent": "layout/first-layout.tsx",
       "children": [
-        "/_first/_second/layout-a",
-        "/_first/_second/layout-b"
+        "a.tsx",
+        "b.tsx"
       ]
     },
-    "/_first/_second/layout-a": {
+    "a.tsx": {
       "filePath": "a.tsx",
-      "parent": "/_first/_second"
+      "parent": "layout/second-layout.tsx"
     },
-    "/_first/_second/layout-b": {
+    "b.tsx": {
       "filePath": "b.tsx",
-      "parent": "/_first/_second"
+      "parent": "layout/second-layout.tsx"
     }
   }
 }

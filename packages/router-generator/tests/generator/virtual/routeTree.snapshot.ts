@@ -60,49 +60,49 @@ const dbInvoicesIndexRoute = dbInvoicesIndexImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
+    'index.tsx': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof indexImport
       parentRoute: typeof rootRoute
     }
-    '/_layout': {
+    'layout.tsx': {
       id: '/_layout'
       path: ''
       fullPath: ''
       preLoaderRoute: typeof layoutImport
       parentRoute: typeof rootRoute
     }
-    '/_layout/dashboard': {
+    'db/dashboard.tsx': {
       id: '/_layout/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof dbDashboardImport
       parentRoute: typeof layoutImport
     }
-    '/_layout/dashboard/': {
+    'db/dashboard-index.tsx': {
       id: '/_layout/dashboard/'
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof dbDashboardIndexImport
       parentRoute: typeof dbDashboardImport
     }
-    '/_layout/dashboard/invoices': {
+    'db/dashboard-invoices.tsx': {
       id: '/_layout/dashboard/invoices'
       path: '/invoices'
       fullPath: '/dashboard/invoices'
       preLoaderRoute: typeof dbDashboardInvoicesImport
       parentRoute: typeof dbDashboardImport
     }
-    '/_layout/dashboard/invoices/': {
+    'db/invoices-index.tsx': {
       id: '/_layout/dashboard/invoices/'
       path: '/'
       fullPath: '/dashboard/invoices/'
       preLoaderRoute: typeof dbInvoicesIndexImport
       parentRoute: typeof dbDashboardInvoicesImport
     }
-    '/_layout/dashboard/invoices/$id': {
+    'db/invoice-detail.tsx': {
       id: '/_layout/dashboard/invoices/$id'
       path: '/$id'
       fullPath: '/dashboard/invoices/$id'
